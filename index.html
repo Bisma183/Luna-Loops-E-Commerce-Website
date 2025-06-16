@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LunaLoops Products</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LunaLoops</h1>
+      <nav>
+        <a href="#" onclick="loadProducts('crochet')">Crochet</a>
+        <a href="#" onclick="loadProducts('embroidered')">Embroidered</a>
+        <a href="#" onclick="loadProducts('accessories')">Accessories</a>
+        <a href="#" onclick="loadProducts('paintings')">Paintings</a>
+
+        <!-- Login and Sign Up as Buttons -->
+        <button class="nav-btn" onclick="openModal('login')">Login</button>
+        <button class="nav-btn" onclick="openModal('signup')">Sign Up</button>
+      </nav>
+    </header>
+
+    <main>
+      <h2 id="genre-title">Products</h2>
+      <div id="product-list" class="product-grid"></div>
+    </main>
+
+    <!-- Login Modal -->
+    <div id="login-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('login')">&times;</span>
+        <h2>Login</h2>
+        <form id="login-form">
+          <input name="email" placeholder="Email" required />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <button type="submit">Log In</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div id="signup-modal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('signup')">&times;</span>
+        <h2>Sign Up</h2>
+        <form id="signup-form">
+          <input name="username" placeholder="Name" required />
+          <input name="email" placeholder="Email" required />
+          <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+          />
+          <select name="role">
+            <option value="customer">Customer</option>
+            <option value="admin">Admin</option>
+          </select>
+          <button type="submit">Sign Up</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/public/app.js"></script>
+  </body>
+</html>

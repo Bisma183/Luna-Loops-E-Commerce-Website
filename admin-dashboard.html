@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+  <body onload="showSection('products')">
+    <header>
+      <h1>Admin Dashboard</h1>
+      <nav>
+        <a href="#" onclick="showSection('products')">Manage Products</a>
+        <a href="#" onclick="showSection('orders')">View Orders</a>
+        <a href="#" onclick="showSection('users')">View Users</a>
+        <a href="/logout" class="nav-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main>
+      <div id="products" class="admin-section">
+        <h2>All Products</h2>
+
+        <!-- Add Product Form -->
+        <form id="add-product-form">
+          <input type="text" name="name" placeholder="Product Name" required />
+          <textarea name="description" placeholder="Description"></textarea>
+          <input
+            type="number"
+            name="price"
+            placeholder="Price"
+            required
+            step="0.01"
+          />
+          <input
+            type="text"
+            name="image_url"
+            placeholder="Image File Name (e.g., item.jpg)"
+            required
+          />
+          <input
+            type="text"
+            name="genre"
+            placeholder="Genre (e.g., crochet)"
+            required
+          />
+          <button type="submit">Add Product</button>
+        </form>
+
+        <!-- Product List -->
+        <div id="product-list" class="product-grid"></div>
+      </div>
+
+      <div id="orders" class="admin-section" style="display: none">
+        <h2>All Orders</h2>
+        <div id="order-list"></div>
+      </div>
+
+      <div id="users" class="admin-section" style="display: none">
+        <h2>All Users</h2>
+        <div id="user-list"></div>
+      </div>
+    </main>
+
+    <script>
+      function showSection(section) {
+        document.querySelectorAll(".admin-section").forEach((div) => {
+          div.style.display = "none";
+        });
+        document.getElementById(section).style.display = "block";
+
+        if (section === "products") {
+          fetch("/admin/products")
+            .then((res) => res.json())
+            .then((data) => {
+              const container = document.getElementById("product-list");
+              container.innerHTML = data
+                .map(
+                  (p) => `
+                    <div class="product-card">
+                      <div class="image-container">
+                        <img src="/public/images/${p.image_url}" alt="${
+                    p.name
+                  }" />
+                      </div>
+                      <div class="details">
+                        <h3>${p.name}</h3>
+                        <p>${p.description || ""}</p>
+                        <p class="price">$${p.price}</p>
+                        <button onclick="deleteProduct('${p.genre}', ${
+                    p.id
+                  })">Delete</button>
+
+                      </div>
+                    </div>
+                  `
+                )
+                .join("");
+            });
+        } else if (section === "orders") {
+          fetch("/admin/orders")
+            .then((res) => res.json())
+            .then((data) => {
+              const orderList = document.getElementById("order-list");
+              orderList.innerHTML = `
+                <table class="order-table">
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>User</th>
+                      <th>Email</th>
+                      <th>Product</th>
+                      <th>Quantity</th>
+                      <th>Total Price</th>
+                      <th>Status</th>
+                      <th>Order Date</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${data
+                      .map((order) => {
+                        return `
+                          <tr>
+                          <tr>
+                            <td>${order.order_id}</td>
+                            <td>${order.username}</td>
+                            <td>${order.email}</td>
+                            <td>${order.product_name}</td>
+                            <td>${order.quantity}</td>
+                            <td>$${(order.price * order.quantity).toFixed(
+                              2
+                            )}</td>
+
+                            <td>
+
+                              <select onchange="updateOrderStatus(${
+                                order.order_id
+                              }, this.value)">
+                                <option value="Pending" ${
+                                  order.status === "Pending" ? "selected" : ""
+                                }>Pending</option>
+                                <option value="Shipped" ${
+                                  order.status === "Shipped" ? "selected" : ""
+                                }>Shipped</option>
+                                <option value="Delivered" ${
+                                  order.status === "Delivered" ? "selected" : ""
+                                }>Delivered</option>
+                              </select>
+                            </td>
+                            <td>${new Date(
+                              order.created_at
+                            ).toLocaleString()}</td>
+                          </tr>
+                        `;
+                      })
+                      .join("")}
+                  </tbody>
+                </table>
+              `;
+            })
+            .catch((error) => console.error("Error fetching orders:", error));
+        } else if (section === "users") {
+          fetch("/admin/users")
+            .then((res) => res.json())
+            .then((data) => {
+              document.getElementById("user-list").innerHTML = data
+                .map((u) => `<p>${u.username} (${u.email}) - ${u.role}</p>`)
+                .join("");
+            });
+        }
+      }
+
+      function updateOrderStatus(orderId, newStatus) {
+        fetch("/admin/orders/update-status", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ orderId, status: newStatus }),
+        })
+          .then((res) => res.text())
+          .then((msg) => {
+            alert(msg);
+            showSection("orders");
+          })
+          .catch((err) => alert("Error updating status"));
+      }
+
+      // Add Product handler
+      document
+        .getElementById("add-product-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData.entries());
+
+          fetch("/admin/products/add", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+          })
+            .then((res) => res.text())
+            .then((msg) => {
+              alert(msg);
+              this.reset();
+              showSection("products");
+            })
+            .catch(() => alert("Failed to add product"));
+        });
+
+      // Delete Product
+      function deleteProduct(genre, id) {
+        if (!confirm("Are you sure you want to delete this product?")) return;
+
+        fetch(`/admin/products/delete/${genre}/${id}`, {
+          method: "DELETE",
+        })
+          .then((res) => res.text())
+          .then((msg) => {
+            alert(msg);
+            showSection("products");
+          })
+          .catch(() => alert("Failed to delete product"));
+      }
+    </script>
+  </body>
+</html>

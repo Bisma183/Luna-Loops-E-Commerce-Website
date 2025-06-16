@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>LunaLoops Customer Dashboard</h1>
+      <nav>
+        <a href="/customer-dashboard.html" class="nav-btn"
+          >← Back to Dashboard</a
+        >
+        <a href="/logout" class="nav-btn">Logout</a>
+      </nav>
+    </header>
+
+    <main>
+      <h2>Your Cart</h2>
+      <div id="cart-items" class="cart-items-container">
+        <!-- Cart items will be loaded here -->
+      </div>
+      <div id="cart-actions">
+        <button id="checkout-btn">Proceed to Checkout</button>
+      </div>
+    </main>
+
+    <script src="/public/app.js"></script>
+    <script>
+      // Ensure that the cart is loaded when the page is loaded
+      window.onload = () => {
+        if (window.location.pathname.includes("/cart.html")) {
+          loadCart();
+        }
+      };
+    </script>
+  </body>
+</html>

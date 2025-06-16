@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details</title>
+    <link rel="stylesheet" href="/public/css/styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Product Details</h1>
+      <nav>
+        <a href="/customer-dashboard.html" class="nav-btn"
+          >← Back to Dashboard</a
+        >
+        <a href="/cart.html" class="nav-btn">View Cart</a>
+        <a href="/logout" class="nav-btn">Logout</a>
+      </nav>
+    </header>
+    <main>
+      <!-- Product Details Container -->
+      <div class="product-details-container" id="product-details">
+        <!-- Product Image and Details will be dynamically populated -->
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" value="1" min="1" max="10" />
+      </div>
+      <!-- Add to Cart Button (this will be dynamically injected) -->
+      <div class="add-to-cart-container" id="add-to-cart-btn-container">
+        <!-- Button will be dynamically created -->
+      </div>
+    </main>
+
+    <script src="/public/js/product-details.js"></script>
+  </body>
+</html>
